@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0E1220">
+<title>RutaClara — Transporte urbano en la ciudad de Cusco</title>
+<meta name="description" content="RutaClara: encuentra rutas, horarios y paraderos del transporte urbano en la ciudad de Cusco.">
+<meta property="og:title" content="RutaClara — Transporte público de Cusco">
+<meta property="og:description" content="Rutas, horarios y paraderos de la ciudad de Cusco en tu celular. Gratis, para Android.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%234F46C8'/%3E%3Cpath d='M10 23c0-5 12-4 12-11' stroke='%23fff' stroke-width='2.6' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='10' cy='23' r='3' fill='%23fff'/%3E%3Ccircle cx='22' cy='11' r='3' fill='%23D9622B'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<link rel="stylesheet" href="css/estilos.css">
+<style>a.primary,a.cta{display:inline-block;text-decoration:none;cursor:pointer}</style>
+</head>
+<body class="site-locked">
+<div class="auth-gate" id="authGate">
+  <div class="auth-visual" aria-hidden="true">
+    <div class="auth-topbrand"><span class="auth-logo"><svg viewBox="0 0 32 32"><path d="M8 24c0-6 15-5 15-14"/><circle cx="8" cy="24" r="3"/><circle cx="23" cy="10" r="3"/></svg></span><span>Ruta<b>Clara</b></span><span class="city-chip"><svg viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg> Cusco, Perú</span></div>
+    <div class="auth-visual-copy"><span class="auth-kicker"><i></i> MOVILIDAD URBANA MÁS CLARA</span><h1>Muévete por<br> <em>Cusco</em> con confianza.</h1><p>Descubre una forma más sencilla de orientarte por la ciudad. Tus rutas urbanas, más cerca de ti.</p>
+      <div class="auth-route-card"><div class="route-icon"><svg viewBox="0 0 24 24"><path d="M6 19c0-4 12-3 12-10"/><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="9" r="2.5"/></svg></div><div><small>Tu ciudad, a tu ritmo</small><strong>Explora Cusco paso a paso</strong></div><span class="route-arrow">↗</span></div>
+    </div>
+    <div class="auth-map-art"><svg viewBox="0 0 540 440" role="presentation"><g class="map-lines"><path d="M-20 70L160 150 310 55 560 170M-20 160L120 240 270 155 560 300M-10 290L140 360 290 265 550 390M70 -20L140 460M190 -20L250 460M320 -20L360 460M440 -20L470 460M-20 210L550 210M-20 340L550 340"/><path d="M-10 80Q90 110 140 190T300 245T530 140" class="route-line"/></g><circle cx="140" cy="190" r="8" class="map-point"/><circle cx="300" cy="245" r="8" class="map-point orange"/><circle cx="300" cy="245" r="18" class="map-pulse"/></svg><span class="map-label label-one">Centro histórico</span><span class="map-label label-two">Tu próxima ruta</span></div>
+    <div class="auth-footnote"><span>✦</span> Diseñado para la ciudad de Cusco</div>
+  </div>
+  <div class="auth-side"><div class="auth-mobile-brand"><span class="auth-logo"><svg viewBox="0 0 32 32"><path d="M8 24c0-6 15-5 15-14"/><circle cx="8" cy="24" r="3"/><circle cx="23" cy="10" r="3"/></svg></span> Ruta<b>Clara</b></div>
+    <div class="auth-form-wrap">
+      <div class="auth-welcome"><span class="welcome-mark">✦</span><p class="auth-overline">BIENVENIDO A RUTACLARA</p><h2 id="authTitle">Qué bueno verte de nuevo</h2><p id="authSubtitle">Ingresa a tu cuenta y empieza a explorar Cusco.</p></div>
+      <div class="auth-tabs" role="tablist"><button type="button" class="auth-tab active" id="loginTab" role="tab" aria-selected="true">Iniciar sesión</button><button type="button" class="auth-tab" id="registerTab" role="tab" aria-selected="false">Crear cuenta</button></div>
+      <form id="authForm" novalidate>
+        <div class="auth-field" id="nameField" hidden><label for="authName">Nombre completo</label><div class="auth-input"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-6.5 8-6.5s8 2.5 8 6.5"/></svg><input id="authName" name="name" type="text" autocomplete="name" placeholder="¿Cómo te llamas?"></div></div>
+        <div class="auth-field"><label for="authEmail">Correo electrónico</label><div class="auth-input"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg><input id="authEmail" name="email" type="email" autocomplete="email" placeholder="tu@correo.com" required></div></div>
+        <div class="auth-field"><div class="label-row"><label for="authPassword">Contraseña</label><button class="text-action" type="button" id="forgotBtn">¿La olvidaste?</button></div><div class="auth-input"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="authPassword" name="password" type="password" autocomplete="current-password" placeholder="Mínimo 8 caracteres" minlength="8" required><button class="show-password" type="button" id="togglePassword" aria-label="Mostrar contraseña"><svg viewBox="0 0 24 24"><path d="M2.5 12s3.3-6 9.5-6 9.5 6 9.5 6-3.3 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.5"/></svg></button></div></div>
+        <div class="auth-field" id="confirmField" hidden><label for="authConfirm">Confirmar contraseña</label><div class="auth-input"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><input id="authConfirm" type="password" autocomplete="new-password" placeholder="Repite tu contraseña"></div></div>
+        <label class="remember-row" id="rememberRow"><input type="checkbox" id="rememberMe" checked><span class="custom-check"></span><span>Recordar mi correo en este dispositivo</span></label>
+        <label class="remember-row terms-row" id="termsRow" hidden><input type="checkbox" id="authTerms"><span class="custom-check"></span><span>Acepto continuar con la demostración de RutaClara.</span></label>
+        <p class="auth-error" id="authError" role="alert" hidden></p><button class="auth-submit" type="submit"><span id="authSubmitText">Entrar a RutaClara</span><span>→</span></button>
+      </form>
+      <div class="auth-divider"><span></span> <small>UNA EXPERIENCIA PENSADA PARA TI</small> <span></span></div>
+      <div class="auth-location"><span class="location-dot"></span><span><b>Disponible inicialmente en Cusco</b><small>La cobertura se ampliará en futuras etapas.</small></span></div>
+      <p class="auth-legal">Al continuar, accedes a una vista de demostración. El inicio de sesión real requiere un servicio de autenticación.</p>
+    </div><div class="auth-side-bottom"><span>© RutaClara</span><span><svg viewBox="0 0 24 24"><path d="M12 3 4.5 6v5c0 5 3.2 8 7.5 10 4.3-2 7.5-5 7.5-10V6z"/><path d="m9 12 2 2 4-4"/></svg> Acceso de demostración</span></div>
+  </div>
+</div>
+<div id="siteContent">
+
+<!-- Iconos y mapa reutilizables -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 17.3l-5.4 3.2 1.4-6-4.6-4 6.1-.5L12 4l2.5 5.9 6.1.5-4.6 4 1.4 6z"/></symbol>
+    <symbol id="i-bus" viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="14" rx="3"/><path d="M4 11h16M8 21v-3.5M16 21v-3.5"/><circle cx="8" cy="14.2" r=".6"/><circle cx="16" cy="14.2" r=".6"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 1 1 12 0v5l1.5 2h-15zM10 20.5a2 2 0 0 0 4 0"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.5 12.5l5 5L19.5 7"/></symbol>
+    <symbol id="i-checkc" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.8 2.8L16 9.5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5a7 7 0 0 0-14 0C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.4"/></symbol>
+    <symbol id="i-swap" viewBox="0 0 24 24"><path d="M8 4v16M8 20l-3.5-3.5M8 20l3.5-3.5M16 20V4M16 4l-3.5 3.5M16 4l3.5 3.5"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c0-4.2 3.4-6.5 7.5-6.5s7.5 2.3 7.5 6.5"/></symbol>
+    <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H15a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h6.5"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.5" y="11" width="15" height="9.5" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+
+    <!-- Mapa estilizado (decorativo) -->
+    <symbol id="mapa" viewBox="0 0 480 600" preserveAspectRatio="xMidYMid slice">
+      <rect width="480" height="600" fill="#E9EDF5"/>
+      <path d="M-10 335 C 90 305, 160 365, 250 335 S 400 295, 490 335" stroke="#C9DFF1" stroke-width="16" fill="none"/>
+      <g stroke="#fff" stroke-linecap="round" fill="none">
+        <g stroke-width="11">
+          <path d="M0 70H480M0 150H480M0 290H480M0 400H480M0 490H480"/>
+          <path d="M60 0V600M150 0V600M250 0V600M340 0V600M430 0V600"/>
+        </g>
+        <g stroke-width="6">
+          <path d="M0 110H480M0 200H480M0 245H480M0 350H480M0 445H480M0 540H480"/>
+          <path d="M105 0V600M200 0V600M295 0V600M385 0V600"/>
+        </g>
+        <path d="M0 560L480 40" stroke-width="9"/>
+      </g>
+      <rect x="168" y="200" width="74" height="46" rx="6" fill="#D5EBDD"/>
+      <rect x="30" y="420" width="90" height="66" rx="8" fill="#D5EBDD"/>
+      <rect x="300" y="82" width="80" height="60" rx="8" fill="#D5EBDD"/>
+    </symbol>
+    <!-- Mapa con ruta de ejemplo: San Jerónimo → Plaza de Armas -->
+    <symbol id="mapa-ruta" viewBox="0 0 480 600" preserveAspectRatio="xMidYMid slice">
+      <use href="#mapa" width="480" height="600"/>
+      <path d="M385 335H300V285H215V238" stroke="#fff" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M385 335H300V285H215V238" stroke="#B45F06" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="385" cy="335" r="10" fill="#4F46C8" stroke="#fff" stroke-width="4"/>
+      <g transform="translate(215 240)"><path d="M0 0c-9-10-14-17-14-24a14 14 0 0 1 28 0c0 7-5 14-14 24z" fill="#D9622B" stroke="#fff" stroke-width="3"/><circle cy="-24" r="5" fill="#fff"/></g>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#inicio" aria-label="RutaClara, ir al inicio">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#4F46C8"/><path d="M10 23c0-5 12-4 12-11" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/><circle cx="10" cy="23" r="3" fill="#fff"/><circle cx="22" cy="11" r="3" fill="#D9622B"/></svg>
+      <span>Ruta<b>Clara</b></span>
+    </a>
+    <nav class="links" id="navLinks" aria-label="Secciones">
+      <a href="#mapa-cusco" data-sec="mapa-cusco">Mapa de Cusco</a>
+      <a href="#vista-previa" data-sec="vista-previa">Vista previa</a>
+      <a href="#funciones" data-sec="funciones">Funciones</a>
+      <a href="#comparar" data-sec="comparar">Comparar</a>
+      <a href="#roadmap" data-sec="roadmap">Avance</a>
+      <a href="#instalar" data-sec="instalar">Instalar</a>
+      <a href="#preguntas" data-sec="preguntas">Preguntas</a>
+    </nav>
+    <a class="cta" href="descargas/rutaclara.apk" download="RutaClara.apk">Descargar APK</a>
+  </div>
+</header>
+
+<section class="hero" id="inicio">
+  <div class="wrap grid">
+    <div class="hero-copy">
+      <div class="status-pill"><span class="dot"></span> En desarrollo · Ciudad de Cusco</div>
+      <h1>Tu transporte público de Cusco, en el bolsillo</h1>
+      <p class="lead">RutaClara te ayuda a explorar rutas, horarios y paraderos del transporte urbano dentro de la ciudad de Cusco, de forma más clara y sencilla.</p>
+      <div class="hero-ctas">
+        <a class="primary light" href="descargas/rutaclara.apk" download="RutaClara.apk">Descargar APK</a>
+        <a class="link-btn" href="#vista-previa">Ver cómo funciona</a>
+      </div>
+      <p class="hero-note">Solo para Android, por ahora. Gratis.</p>
+    </div>
+
+    <div class="map-panel" role="img" aria-label="Ejemplo de búsqueda de ruta de San Jerónimo a la Plaza de Armas">
+      <svg class="map-bg" viewBox="0 0 480 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#mapa-ruta" width="480" height="600"/></svg>
+      <div class="search-card">
+        <div class="fields">
+          <div class="field"><span class="dot-o"></span><span class="k">Origen</span><b>San Jerónimo</b></div>
+          <div class="field"><svg class="i pin-d"><use href="#i-pin"/></svg><span class="k">Destino</span><b>Plaza de Armas</b></div>
+          <span class="swap"><svg class="i"><use href="#i-swap"/></svg></span>
+        </div>
+        <button class="sc-btn" id="heroSearchRoute" type="button">Buscar ruta <span aria-hidden="true">↗</span></button>
+      </div>
+      <div class="sheet">
+        <span class="grab"></span>
+        <div class="sheet-t">2 rutas encontradas</div>
+        <div class="rt">
+          <span class="chip-l l1">L1</span>
+          <div class="rt-main"><div class="rt-t">Línea 1 — Centro</div><div class="rt-s"><svg class="i"><use href="#i-clock"/></svg>Cada 12 min</div></div>
+          <div class="rt-time">5:00 a.m.</div>
+          <div class="deps"><span>5:00</span><span>5:12</span><span>5:24</span></div>
+        </div>
+        <div class="rt hide-sm">
+          <span class="chip-l l3">L3</span>
+          <div class="rt-main"><div class="rt-t">Línea 3 — Circunvalación</div><div class="rt-s"><svg class="i"><use href="#i-clock"/></svg>Cada 15 min</div></div>
+          <div class="rt-time">5:30 a.m.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="wrap">
+    <div class="stats-strip reveal">
+      <div class="stat"><div class="num">&lt; 3 s</div><div class="label">para mostrarte tu ruta (tiempo estimado de la app; no incluye la espera real del transporte)</div></div>
+      <div class="stat"><div class="num">3</div><div class="label">Líneas urbanas (ejemplo)</div></div>
+      <div class="stat"><div class="num">2</div><div class="label">Rutas urbanas de ejemplo</div></div>
+      <div class="stat"><div class="num">17</div><div class="label">Paraderos mapeados</div></div>
+    </div>
+  </div>
+</section>
+
+
+<section id="mapa-cusco" class="cusco-map-section alt">
+  <div class="wrap">
+    <div class="map-section-head">
+      <div class="map-section-copy">
+        <div class="eyebrow reveal">Explora la ciudad</div>
+        <h2 class="reveal">Cusco, en el mapa.<br><span>Tu próximo recorrido empieza aquí.</span></h2>
+        <p class="lede reveal">Explora un mapa real de la ciudad de Cusco y sus principales zonas. Esta vista es demostrativa: los puntos son referencias geográficas y las líneas no representan rutas oficiales de transporte.</p>
+      </div>
+      <div class="map-live-chip reveal"><span class="live-dot"></span><span><b>MAPA INTERACTIVO</b><small>Mapa de calles de Cusco</small></span></div>
+    </div>
+    <div class="real-map-shell reveal">
+      <div class="real-map-topbar"><span class="map-window-dots"><i></i><i></i><i></i></span><span class="map-window-title"><span class="tiny-crosshair">⌖</span> RUTACLARA / CUSCO</span><span class="map-coordinate">13°31′S · 71°58′W</span><button type="button" class="map-layer-toggle" id="mapLayerToggle" aria-pressed="false">Mapa topográfico</button></div>
+      <div id="cuscoRealMap" class="real-map" role="application" aria-label="Mapa interactivo de la ciudad de Cusco"></div>
+      <div class="map-overlay-card map-overlay-left"><span class="overlay-icon">⌖</span><div><small>ÁREA DE COBERTURA INICIAL</small><b>Ciudad de Cusco</b></div></div>
+      <div class="map-overlay-card map-overlay-right"><span class="legend-line"></span><div><small>RECORRIDO ILUSTRATIVO</small><b>Solo referencia visual</b></div></div>
+    </div>
+    <div class="map-controls reveal">
+      <label class="map-select-field"><span>ORIGEN</span><select id="mapOrigin"><option value="sanjeronimo">San Jerónimo</option><option value="wanchaq">Wanchaq</option><option value="centro">Plaza de Armas</option><option value="sansebastian">San Sebastián</option><option value="aeropuerto">Aeropuerto Alejandro Velasco Astete</option></select></label>
+      <button class="map-swap-btn" id="mapSwap" type="button" aria-label="Intercambiar origen y destino">⇄</button>
+      <label class="map-select-field"><span>DESTINO</span><select id="mapDestination"><option value="centro" selected>Plaza de Armas</option><option value="sanjeronimo">San Jerónimo</option><option value="wanchaq">Wanchaq</option><option value="sansebastian">San Sebastián</option><option value="aeropuerto">Aeropuerto Alejandro Velasco Astete</option></select></label>
+      <button class="map-route-btn" id="mapShowRoute" type="button"><span>⌁</span> Mostrar recorrido</button>
+    </div>
+    <div class="route-feedback" id="routeFeedback" aria-live="polite"><span class="feedback-icon">⌁</span><div><b>Tu recorrido aparecerá aquí</b><p>Elige dos puntos y pulsa “Mostrar recorrido” para ver una conexión visual entre ellos.</p></div><span class="feedback-tag">DEMO</span></div>
+    <p class="map-disclaimer">Los mapas y marcadores requieren conexión a internet. Este prototipo no calcula navegación ni muestra horarios, tráfico o recorridos oficiales de buses.</p>
+  </div>
+</section>
+
+<section id="vista-previa">
+  <div class="wrap">
+    <div class="eyebrow reveal">Vista previa</div>
+    <h2 class="reveal">Así se está diseñando la app</h2>
+    <p class="lede reveal">La app todavía está en construcción — estas son referencias del diseño planeado, no capturas reales todavía.</p>
+    <div class="phones-row">
+
+      <div class="phone reveal">
+        <div class="phone-frame"><div class="phone-screen">
+          <div class="ph-status"><span>9:41</span><span class="ph-sig"><i></i><i></i><i></i></span></div>
+          <div class="ph-appbar"><span class="mark"></span> RutaClara</div>
+          <div class="ph-map"><svg viewBox="110 160 300 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#mapa-ruta" width="480" height="600"/></svg></div>
+          <div class="ph-body">
+            <div class="field"><span class="dot-o"></span><span class="k">Origen</span><b>Elegir...</b></div>
+            <div class="field"><svg class="i pin-d"><use href="#i-pin"/></svg><span class="k">Destino</span><b>Elegir...</b></div>
+            <div class="ph-btn">Buscar con pasos guiados</div>
+          </div>
+          <div class="ph-navbar"><div class="tab active"><svg class="i"><use href="#i-search"/></svg>Buscar</div><div class="tab"><svg class="i"><use href="#i-bus"/></svg>Rutas</div><div class="tab"><svg class="i"><use href="#i-star"/></svg>Favoritas</div><div class="tab"><svg class="i"><use href="#i-user"/></svg>Cuenta</div></div>
+        </div></div>
+        <p class="phone-caption">Buscar por origen y destino</p>
+      </div>
+
+      <div class="phone reveal">
+        <div class="phone-frame"><div class="phone-screen">
+          <div class="ph-status"><span>9:41</span><span class="ph-sig"><i></i><i></i><i></i></span></div>
+          <div class="ph-appbar"><span class="mark"></span> Resultados</div>
+          <div class="ph-body">
+            <div class="rt"><span class="chip-l l1">L1</span><div class="rt-main"><div class="rt-t">Línea 1 — Centro</div><div class="rt-s"><svg class="i"><use href="#i-clock"/></svg>Cada 12 min</div></div><div class="rt-time">5:00 a.m.</div></div>
+            <div class="rt"><span class="chip-l l2">L2</span><div class="rt-main"><div class="rt-t">Línea 2 — Wanchaq</div><div class="rt-s"><svg class="i"><use href="#i-clock"/></svg>Cada 8 min</div></div><div class="rt-time">5:15 a.m.</div></div>
+            <div class="rt"><span class="chip-l l3">L3</span><div class="rt-main"><div class="rt-t">Línea 3 — Circuito</div><div class="rt-s"><svg class="i"><use href="#i-clock"/></svg>Cada 15 min</div></div><div class="rt-time">5:30 a.m.</div></div>
+          </div>
+          <div class="ph-navbar"><div class="tab"><svg class="i"><use href="#i-search"/></svg>Buscar</div><div class="tab active"><svg class="i"><use href="#i-bus"/></svg>Rutas</div><div class="tab"><svg class="i"><use href="#i-star"/></svg>Favoritas</div><div class="tab"><svg class="i"><use href="#i-user"/></svg>Cuenta</div></div>
+        </div></div>
+        <p class="phone-caption">Resultados con horarios</p>
+      </div>
+
+      <div class="phone reveal">
+        <div class="phone-frame"><div class="phone-screen">
+          <div class="ph-status"><span>9:41</span><span class="ph-sig"><i></i><i></i><i></i></span></div>
+          <div class="ph-appbar"><span class="mark"></span> Mis rutas</div>
+          <div class="ph-body">
+            <div class="rt"><span class="rt-ic"><svg class="i"><use href="#i-star"/></svg></span><div class="rt-main"><div class="rt-t">San Jerónimo → Centro</div><div class="rt-s">Usada 12 veces</div></div></div>
+            <div class="rt"><span class="rt-ic"><svg class="i"><use href="#i-star"/></svg></span><div class="rt-main"><div class="rt-t">Wanchaq → San Sebastián</div><div class="rt-s">Usada 4 veces</div></div></div>
+          </div>
+          <div class="ph-navbar"><div class="tab"><svg class="i"><use href="#i-search"/></svg>Buscar</div><div class="tab"><svg class="i"><use href="#i-bus"/></svg>Rutas</div><div class="tab active"><svg class="i"><use href="#i-star"/></svg>Favoritas</div><div class="tab"><svg class="i"><use href="#i-user"/></svg>Cuenta</div></div>
+        </div></div>
+        <p class="phone-caption">Mis rutas favoritas</p>
+      </div>
+
+    </div>
+    <p class="mock-note">Diseño construido desde cero para Android — estas vistas se irán reemplazando por capturas reales conforme avance el desarrollo.</p>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <div class="spotlight reveal">
+      <div class="spot-text">
+        <div class="eyebrow">Función estrella</div>
+        <h2>Encuentra tu ruta en segundos</h2>
+        <p>Dos toques y listo: elige dónde estás y a dónde vas, o usa el buscador guiado paso a paso.</p>
+        <ul class="spot-list">
+          <li><span class="chk"><svg class="i"><use href="#i-check"/></svg></span> Buscador por origen y destino</li>
+          <li><span class="chk"><svg class="i"><use href="#i-check"/></svg></span> Asistente guiado con ventanas simples</li>
+          <li><span class="chk"><svg class="i"><use href="#i-check"/></svg></span> Horarios, frecuencia y paraderos intermedios</li>
+        </ul>
+      </div>
+      <div class="spot-media">
+        <div class="phone big">
+          <div class="phone-frame"><div class="phone-screen">
+            <div class="ph-status"><span>9:41</span><span class="ph-sig"><i></i><i></i><i></i></span></div>
+            <div class="ph-appbar"><span class="mark"></span> Buscar ruta</div>
+            <div class="ph-body">
+              <div class="field"><span class="dot-o"></span><span class="k">Origen</span><b>San Jerónimo</b></div>
+              <div class="field"><svg class="i pin-d"><use href="#i-pin"/></svg><span class="k">Destino</span><b>Plaza de Armas</b></div>
+              <div class="rt">
+                <span class="chip-l l1">L1</span>
+                <div class="rt-main"><div class="rt-t">Línea 1 — Centro</div><div class="rt-s"><svg class="i"><use href="#i-clock"/></svg>Cada 12 min</div></div>
+                <div class="rt-time">5:00 a.m.</div>
+                <div class="deps"><span>5:00</span><span>5:12</span><span>5:24</span></div>
+              </div>
+              <div class="tl-t">Paraderos del recorrido</div>
+              <ul class="tl">
+                <li><span class="tl-dot"></span>San Jerónimo</li>
+                <li><span class="tl-dot mid"></span>3 paraderos intermedios</li>
+                <li><span class="tl-dot end"></span>Plaza de Armas</li>
+              </ul>
+            </div>
+            <div class="ph-navbar"><div class="tab active"><svg class="i"><use href="#i-search"/></svg>Buscar</div><div class="tab"><svg class="i"><use href="#i-bus"/></svg>Rutas</div><div class="tab"><svg class="i"><use href="#i-star"/></svg>Favoritas</div><div class="tab"><svg class="i"><use href="#i-user"/></svg>Cuenta</div></div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="spotlight reverse reveal">
+      <div class="spot-text">
+        <div class="eyebrow">Función estrella</div>
+        <h2>Sabe dónde estás, antes de que lo digas</h2>
+        <p>Con tu permiso, la app detecta el paradero más cercano a tu ubicación real y te ahorra el primer paso de la búsqueda.</p>
+        <ul class="spot-list">
+          <li><span class="chk"><svg class="i"><use href="#i-check"/></svg></span> Detección automática de tu paradero más cercano</li>
+          <li><span class="chk"><svg class="i"><use href="#i-check"/></svg></span> Solo pide tu destino para completar la búsqueda</li>
+          <li><span class="chk"><svg class="i"><use href="#i-check"/></svg></span> El permiso de ubicación es opcional</li>
+        </ul>
+      </div>
+      <div class="spot-media">
+        <div class="phone big">
+          <div class="phone-frame"><div class="phone-screen">
+            <div class="ph-status"><span>9:41</span><span class="ph-sig"><i></i><i></i><i></i></span></div>
+            <div class="ph-appbar"><span class="mark"></span> Tu ubicación</div>
+            <div class="ph-map"><svg viewBox="240 240 230 150" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><use href="#mapa" width="480" height="600"/><circle cx="385" cy="335" r="24" fill="#0E9AA7" fill-opacity=".2"/><circle cx="385" cy="335" r="9" fill="#0E9AA7" stroke="#fff" stroke-width="4"/></svg></div>
+            <div class="ph-body">
+              <div class="ph-note"><svg class="i"><use href="#i-pin"/></svg> Detectando paradero más cercano…</div>
+              <div class="rt"><span class="rt-ic teal"><svg class="i"><use href="#i-pin"/></svg></span><div class="rt-main"><div class="rt-t">San Jerónimo</div><div class="rt-s">a 0.4 km de ti</div></div></div>
+              <div class="field"><svg class="i pin-d"><use href="#i-pin"/></svg><span class="k">Destino</span><b>Elegir...</b></div>
+              <div class="ph-btn">Continuar</div>
+            </div>
+            <div class="ph-navbar"><div class="tab"><svg class="i"><use href="#i-search"/></svg>Buscar</div><div class="tab active"><svg class="i"><use href="#i-bus"/></svg>Rutas</div><div class="tab"><svg class="i"><use href="#i-star"/></svg>Favoritas</div><div class="tab"><svg class="i"><use href="#i-user"/></svg>Cuenta</div></div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="funciones" class="alt">
+  <div class="wrap">
+    <div class="eyebrow reveal">Más funciones</div>
+    <h2 class="reveal">Y eso no es todo</h2>
+    <p class="lede reveal">El resto de lo que vas a poder hacer con RutaClara.</p>
+    <div class="feature-grid">
+      <div class="feature-card reveal">
+        <span class="ficon"><svg class="i"><use href="#i-star"/></svg></span>
+        <div><h3>Rutas favoritas</h3>
+        <p>Guarda las rutas que más usas para acceder a ellas con un toque.</p></div>
+      </div>
+      <div class="feature-card reveal">
+        <span class="ficon"><svg class="i"><use href="#i-bus"/></svg></span>
+        <div><h3>Cobertura en la ciudad de Cusco</h3>
+        <p>Por ahora, la cobertura se centra únicamente en la ciudad de Cusco.</p></div>
+      </div>
+      <div class="feature-card reveal">
+        <span class="ficon"><svg class="i"><use href="#i-bell"/></svg></span>
+        <div><h3>Alertas de servicio</h3>
+        <p>Avisos de demoras o cambios de recorrido antes de salir de casa.</p></div>
+      </div>
+      <div class="feature-card reveal">
+        <span class="ficon"><svg class="i"><use href="#i-checkc"/></svg></span>
+        <div><h3>Fácil de usar</h3>
+        <p>Pantallas simples, sin pasos innecesarios para llegar a tu ruta.</p></div>
+      </div>
+      <div class="feature-card reveal">
+        <span class="ficon"><svg class="i"><use href="#i-route"/></svg></span>
+        <div><h3>Nombre de empresa y recorrido completo</h3>
+        <p>Ve qué empresa opera la línea y todo su recorrido, no solo tu tramo.</p></div>
+      </div>
+      <div class="feature-card reveal">
+        <span class="ficon"><svg class="i"><use href="#i-lock"/></svg></span>
+        <div><h3>Cuenta propia</h3>
+        <p>Regístrate para guardar tus rutas y sincronizarlas cuando quieras.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="comparar">
+  <div class="wrap">
+    <div class="eyebrow reveal">La diferencia</div>
+    <h2 class="reveal">RutaClara vs. preguntar en la calle</h2>
+    <p class="lede reveal">Así de simple es la diferencia que buscamos.</p>
+    <table class="compare-table reveal">
+      <thead><tr><th>&nbsp;</th><th>Preguntar en la calle</th><th class="win">Con RutaClara</th></tr></thead>
+      <tbody>
+      <tr><td class="row-h">Tiempo para saber tu ruta</td><td class="neg" data-label="Preguntar en la calle"><span class="cell"><svg class="i mk"><use href="#i-x"/></svg>Variable, depende de a quién le preguntes</span></td><td class="win" data-label="Con RutaClara"><span class="cell"><svg class="i mk"><use href="#i-check"/></svg>Segundos</span></td></tr>
+      <tr><td class="row-h">Disponibilidad</td><td class="neg" data-label="Preguntar en la calle"><span class="cell"><svg class="i mk"><use href="#i-x"/></svg>Solo si hay alguien cerca</span></td><td class="win" data-label="Con RutaClara"><span class="cell"><svg class="i mk"><use href="#i-check"/></svg>24/7, con conexión a internet</span></td></tr>
+      <tr><td class="row-h">Costo</td><td class="neg" data-label="Preguntar en la calle"><span class="cell"><svg class="i mk"><use href="#i-x"/></svg>Gratis, pero no siempre confiable</span></td><td class="win" data-label="Con RutaClara"><span class="cell"><svg class="i mk"><use href="#i-check"/></svg>Gratis y consistente</span></td></tr>
+      <tr><td class="row-h">Conoces el horario exacto</td><td class="neg" data-label="Preguntar en la calle"><span class="cell"><svg class="i mk"><use href="#i-x"/></svg>Raramente</span></td><td class="win" data-label="Con RutaClara"><span class="cell"><svg class="i mk"><use href="#i-check"/></svg>Sí, con frecuencia y próximas salidas</span></td></tr>
+      <tr><td class="row-h">Sabes qué paraderos recorre</td><td class="neg" data-label="Preguntar en la calle"><span class="cell"><svg class="i mk"><use href="#i-x"/></svg>Casi nunca</span></td><td class="win" data-label="Con RutaClara"><span class="cell"><svg class="i mk"><use href="#i-check"/></svg>Recorrido completo visible</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="roadmap" class="alt">
+  <div class="wrap">
+    <div class="eyebrow reveal">Avance del proyecto</div>
+    <h2 class="reveal">¿En qué etapa vamos?</h2>
+    <p class="lede reveal">Transparencia total: RutaClara ha llegado a la etapa de lanzamiento de la APK.</p>
+    <div class="roadmap reveal">
+      <div class="road-item"><div class="line"></div><div class="road-dot done"><svg class="i"><use href="#i-check"/></svg></div><div class="road-txt"><h3>Definición del proyecto</h3><span class="road-tag done">Listo</span><p>Alcance, objetivos y cobertura inicial: ciudad de Cusco.</p></div></div>
+      <div class="road-item"><div class="line"></div><div class="road-dot done"><svg class="i"><use href="#i-check"/></svg></div><div class="road-txt"><h3>Base de datos y backend</h3><span class="road-tag done">Listo</span><p>MySQL y API en Java (Spring Boot) listas para consumir.</p></div></div>
+      <div class="road-item"><div class="line"></div><div class="road-dot done"><svg class="i"><use href="#i-check"/></svg></div><div class="road-txt"><h3>Landing de presentación</h3><span class="road-tag done">Listo</span><p>Web de presentación del proyecto y sus funciones.</p></div></div>
+      <div class="road-item"><div class="line"></div><div class="road-dot done"><svg class="i"><use href="#i-check"/></svg></div><div class="road-txt"><h3>App Android (Flutter)</h3><span class="road-tag done">Listo</span><p>Desarrollo de la aplicación Android.</p></div></div>
+      <div class="road-item"><div class="road-dot done"><svg class="i"><use href="#i-check"/></svg></div><div class="road-txt"><h3>Lanzamiento de la APK</h3><span class="road-tag done">Etapa alcanzada</span><p>RutaClara llegó a la etapa de lanzamiento de la APK. Ya puedes descargarla desde esta página e instalarla en tu Android.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="descargar" class="band-sec">
+  <div class="wrap">
+    <div class="cta-band reveal">
+      <div class="cta-text">
+        <h3>Descarga RutaClara</h3>
+        <p>RutaClara llegó a la etapa de lanzamiento de la APK. Ya puedes descargar el archivo APK e instalarla en tu Android.</p>
+      </div>
+      <div class="cta-actions">
+        <a class="primary light" href="descargas/rutaclara.apk" download="RutaClara.apk">Descargar APK</a>
+        <div class="or" style="display:none">o recibe un aviso cuando esté lista</div>
+        <div class="notify-row" style="display:none">
+          <input type="email" id="notifyEmail" placeholder="tu@correo.com" aria-label="Tu correo">
+          <button onclick="avisarme()">Avísame cuando esté lista</button>
+        </div>
+        <div class="notify-ok" id="notifyOk">Listo, te avisaremos a ese correo (demo local).</div>
+      </div>
+    </div>
+    <p class="data-note">Al instalar un APK fuera de Google Play, Android pide confirmar el origen del archivo — más detalles en la sección de instalación.</p>
+  </div>
+</section>
+
+<section id="instalar" class="alt">
+  <div class="wrap">
+    <div class="eyebrow reveal">Instalación</div>
+    <h2 class="reveal">Cómo instalar la APK en tu Android</h2>
+    <p class="lede reveal">Como la app todavía no está en Google Play, se instala directamente desde el archivo APK.</p>
+    <ol class="steps-list reveal">
+      <li><div class="txt"><h3>Descarga el archivo</h3><p>Toca el botón "Descargar APK" de esta página desde tu celular.</p></div></li>
+      <li><div class="txt"><h3>Permite la instalación</h3><p>Android pedirá autorizar "instalar apps de fuentes desconocidas" para esa descarga — actívalo solo para este archivo.</p></div></li>
+      <li><div class="txt"><h3>Instala la app</h3><p>Abre el archivo descargado y toca "Instalar".</p></div></li>
+      <li><div class="txt"><h3>Dale permiso de ubicación</h3><p>Ábrela y acepta el permiso de ubicación para que te detecte el paradero más cercano.</p></div></li>
+    </ol>
+    <div class="apk-trust-card reveal" id="seguridad-apk">
+      <div class="apk-trust-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 3 4.5 6v5c0 5 3.2 8 7.5 10 4.3-2 7.5-5 7.5-10V6z"/><path d="m8.5 12.2 2.3 2.3 4.8-5"/></svg>
+      </div>
+      <div class="apk-trust-copy">
+        <span class="trust-kicker">INSTALACIÓN CON CONFIANZA</span>
+        <h3>¿Android muestra una advertencia al instalar?</h3>
+        <p>Android puede advertir cuando una aplicación se instala desde fuera de Google Play. Esa advertencia no demuestra por sí sola que una app tenga virus, pero tampoco debe ignorarse.</p>
+        <ul><li>Descarga la APK únicamente desde un enlace oficial de RutaClara.</li><li>Revisa el nombre del archivo y el origen antes de abrirlo.</li><li>Si Play Protect muestra una alerta de amenaza, detén la instalación y no la ignores.</li><li>No concedas permisos que no sean necesarios para las funciones explicadas.</li></ul>
+        <p class="trust-honesty"><strong>Transparencia:</strong> mientras la APK no esté publicada y analizada, no podemos garantizar que esté libre de amenazas. RutaClara aún está en desarrollo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow reveal">Requisitos</div>
+    <h2 class="reveal">Lo que necesitas para usarla</h2>
+    <div class="req-grid reveal">
+      <div class="req-card"><div class="num">Android 8+</div><div class="label">Versión mínima estimada</div></div>
+      <div class="req-card"><div class="num">Internet</div><div class="label">Para consultar rutas y horarios</div></div>
+      <div class="req-card"><div class="num">Ubicación</div><div class="label">Permiso opcional, para detectar tu paradero</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="preguntas" class="alt">
+  <div class="wrap">
+    <div class="eyebrow reveal">Preguntas frecuentes</div>
+    <h2 class="reveal">Antes de que preguntes</h2>
+    <div id="faqList" class="reveal">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">¿La app es gratis? <svg class="i chev"><use href="#i-chev"/></svg></button>
+        <div class="faq-a"><div><p>Sí, RutaClara es gratuita.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">¿Cuándo estará disponible para descargar? <svg class="i chev"><use href="#i-chev"/></svg></button>
+        <div class="faq-a"><div><p>Ya está disponible. Toca el botón "Descargar APK" de esta página y sigue los pasos de instalación.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">¿Qué zonas cubre? <svg class="i chev"><use href="#i-chev"/></svg></button>
+        <div class="faq-a"><div><p>Por ahora, RutaClara se enfoca únicamente en la ciudad de Cusco. Los datos de rutas y paraderos que ves en esta demostración son ejemplos y deberán validarse con información real.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">¿Necesito internet todo el tiempo? <svg class="i chev"><use href="#i-chev"/></svg></button>
+        <div class="faq-a"><div><p>Sí, para consultar rutas y horarios actualizados la app necesita conexión a internet.</p></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">¿Por qué no está en Google Play? <svg class="i chev"><use href="#i-chev"/></svg></button>
+        <div class="faq-a"><div><p>Por ahora se distribuye como archivo APK directo mientras el proyecto avanza; publicarla en Google Play es un paso posterior.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contacto">
+  <div class="wrap">
+    <div class="eyebrow reveal">Contacto y soporte</div>
+    <h2 class="reveal">¿Tienes dudas o encontraste un error?</h2>
+    <p class="lede reveal">Escríbenos y te respondemos. En esta versión el mensaje se guarda solo en tu navegador.</p>
+    <div class="form-card reveal">
+      <form id="contactoForm" onsubmit="return enviarContacto(event)">
+        <div class="field-f">
+          <label for="cNombre">Nombre</label>
+          <input type="text" id="cNombre" required>
+        </div>
+        <div class="field-f">
+          <label for="cCorreo">Correo</label>
+          <input type="email" id="cCorreo" required>
+        </div>
+        <div class="field-f">
+          <label for="cMensaje">Mensaje</label>
+          <textarea id="cMensaje" required></textarea>
+        </div>
+        <button class="primary" type="submit">Enviar mensaje</button>
+        <div class="form-ok" id="contactoOk">Gracias, tu mensaje quedó registrado.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-expanded">
+    <div class="footer-top">
+      <div class="foot-main"><span class="foot-brand">RutaClara</span><span>Movilidad urbana más clara · Ciudad de Cusco</span><p>Encuentra una forma más sencilla de orientarte por la ciudad.</p></div>
+      <div class="footer-social"><h3>Síguenos</h3><p class="foot-tech">Próximamente en redes sociales oficiales</p><div class="social-logos" aria-label="Redes sociales previstas">
+        <span class="social-item" title="Instagram — próximamente" aria-label="Instagram próximamente"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.7" r="1"/></svg><small>Instagram</small></span>
+        <span class="social-item" title="Facebook — próximamente" aria-label="Facebook próximamente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 21v-8h3l.5-4H14V7c0-1.2.4-2 2-2h2V1.5C17.3 1.3 16.2 1 15 1c-3.3 0-5 2-5 5.5V9H7v4h3v8z"/></svg><small>Facebook</small></span>
+        <span class="social-item" title="TikTok — próximamente" aria-label="TikTok próximamente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3v11.2a4.2 4.2 0 1 1-3.5-4.1v3.2a1.2 1.2 0 1 0 .5 1V3h3c.3 2.2 1.6 3.7 4 4.2v3.1A8.1 8.1 0 0 1 14 8.7"/></svg><small>TikTok</small></span>
+        <span class="social-item" title="GitHub — próximamente" aria-label="GitHub próximamente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.8c-2.8.6-3.4-1.2-3.4-1.2-.5-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.7.4-1.1.6-1.3-2.2-.3-4.5-1.1-4.5-5A3.9 3.9 0 0 1 6.7 8.8c-.1-.3-.5-1.3.1-2.7 0 0 .8-.3 2.8 1.1a9.7 9.7 0 0 1 5.1 0c2-1.4 2.8-1.1 2.8-1.1.6 1.4.2 2.4.1 2.7a3.9 3.9 0 0 1 1.1 2.7c0 3.9-2.3 4.7-4.5 5 .4.3.7.9.7 1.8V21c0 .3.2.6.7.5A10 10 0 0 0 12 2z"/></svg><small>GitHub</small></span>
+      </div></div>
+      <div class="footer-legal"><h3>Información legal</h3><a href="#terminos">Términos y condiciones</a><a href="#privacidad">Política de privacidad</a><a href="#seguridad-apk">Seguridad de la APK</a></div>
+    </div>
+    <div class="footer-legal-panels">
+      <details id="terminos" class="legal-detail"><summary>Términos y condiciones</summary><div><p>RutaClara es un proyecto en desarrollo. Esta página y sus pantallas son demostrativas; las rutas, horarios, frecuencias y paraderos de ejemplo no deben tomarse como información oficial para planificar viajes.</p><p>La APK solo debe descargarse desde un canal oficial cuando esté publicada. La disponibilidad, funciones y requisitos pueden cambiar durante el desarrollo. No se ofrece garantía de servicio continuo ni de exactitud de datos de transporte que aún no han sido validados.</p><p>El usuario debe revisar los permisos solicitados y las advertencias de seguridad del dispositivo. No continúes si el sistema identifica una amenaza.</p></div></details>
+      <details id="privacidad" class="legal-detail"><summary>Política de privacidad</summary><div><p>En esta versión demostrativa, el formulario de contacto y el aviso de disponibilidad muestran confirmaciones locales y no envían automáticamente la información al equipo del proyecto. Algunos datos de prueba pueden guardarse en el almacenamiento local de este navegador.</p><p>No introduzcas contraseñas reales ni información sensible en la demostración. Antes de lanzar una versión con cuentas reales, se deberá publicar una política definitiva que identifique al responsable, las finalidades, el tiempo de conservación y los canales para ejercer derechos sobre los datos personales.</p></div></details>
+    </div>
+    <div class="footer-bottom"><span>© RutaClara · Proyecto integrador — landing de presentación</span><span class="foot-tech">Prototipo académico · Flutter y Dart, Java / Spring Boot, MySQL, Figma y GitHub</span></div>
+  </div>
+</footer>
+
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="js/script.js"></script>
+
+</body>
+</html>
